@@ -27,7 +27,7 @@ const (
 	port = 5432
 )
 
-func OpenConnection() (*sql.DB, int) {
+func OpenConnection() (*sql.DB, string) {
 	// getting constants from .env
 	err := godotenv.Load()
 	if err != nil {
@@ -65,7 +65,7 @@ func OpenConnection() (*sql.DB, int) {
 	}
 
 	// get user_id
-	var userId int
+	var userId string
 	getUser := `SELECT user_id FROM users WHERE email = $1;`
 	err = db.QueryRow(getUser, email).Scan(&userId)
 	if err != nil {
@@ -94,7 +94,7 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	db, userId := OpenConnection()
 
-	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_int = users.user_id WHERE user_id = $1;", userId)
+	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_uuid = users.user_id WHERE user_id = $1;", userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		panic(err)
@@ -150,7 +150,7 @@ var AddTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	db, userId := OpenConnection()
 	defer db.Close()
 
-	sqlStatement := `INSERT INTO tasks (task, status, user_int) VALUES ($1, $2, $3) RETURNING id, task, status;`
+	sqlStatement := `INSERT INTO tasks (task, status, user_uuid) VALUES ($1, $2, $3) RETURNING id, task, status;`
 
 	// retrieve the task after creation from the database and store its details in 'updatedTask' (updatedTask will have the correct id regardless of what was input, and auto-assigned false if no status was given. false status is also given to newTask, but newTask has an id 0 if not specified)
 	var updatedTask Item
@@ -179,7 +179,7 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	db, userId := OpenConnection()
-	sqlStatement := `DELETE FROM tasks WHERE id = $1 AND user_int = $2;`
+	sqlStatement := `DELETE FROM tasks WHERE id = $1 AND user_uuid = $2;`
 
 	res, err := db.Exec(sqlStatement, number, userId)
 	if err != nil {
@@ -196,7 +196,7 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	// fmt.Println(count)
 
 	// to get the remaining tasks, same as the GET function
-	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_int = users.user_id WHERE user_id = $1;", userId)
+	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_uuid = users.user_id WHERE user_id = $1;", userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		panic(err)
@@ -241,7 +241,7 @@ var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	sqlStatement := `UPDATE tasks SET task = $2 WHERE id = $1 AND user_int = $3 RETURNING id, task, status;`
+	sqlStatement := `UPDATE tasks SET task = $2 WHERE id = $1 AND user_uuid = $3 RETURNING id, task, status;`
 
 	// decode the requested data to 'newTask'
 	var newTask Item
@@ -288,8 +288,8 @@ var DoneTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	// store updated task
 	var updatedTask Item
 
-	sqlStatement1 := `SELECT status FROM tasks WHERE id = $1 AND user_int = $2;`
-	sqlStatement2 := `UPDATE tasks SET status = $2 WHERE id = $1 AND user_int = $3 RETURNING id, task, status;`
+	sqlStatement1 := `SELECT status FROM tasks WHERE id = $1 AND user_uuid = $2;`
+	sqlStatement2 := `UPDATE tasks SET status = $2 WHERE id = $1 AND user_uuid = $3 RETURNING id, task, status;`
 
 	db, userId := OpenConnection()
 	defer db.Close()
