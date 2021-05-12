@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"backend/packages"
 	"github.com/gorilla/mux"
@@ -29,7 +30,12 @@ func main() {
 		AllowCredentials: true,
 	})
 
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		port = "8000"
+	}
+
 	handler := c.Handler(r)
-	log.Println("Listening on port 8000...")
-	log.Fatal(http.ListenAndServe(":8000", handler))
+	log.Println("Listening on port " + port + "...")
+	log.Fatal(http.ListenAndServe(":"+port, handler))
 }
