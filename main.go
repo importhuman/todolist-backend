@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"./packages"
+	"backend/packages"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
