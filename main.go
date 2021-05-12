@@ -22,9 +22,10 @@ func main() {
 
 	// for handling CORS
 	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3001", "*"},
-		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT", "OPTIONS", "*"},
-		AllowedHeaders:   []string{"Content-Type", "Origin", "Accept", "Authorization", "*"},
+		// Only add 1 value to allowed origins. Only the first one works. "*" is no exception.
+		AllowedOrigins:   []string{"https://mighty-fjord-07080.herokuapp.com"},
+		AllowedMethods:   []string{"GET", "DELETE", "POST", "PUT", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Origin", "Accept", "Authorization"},
 		AllowCredentials: true,
 	})
 
