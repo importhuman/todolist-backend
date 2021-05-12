@@ -33,7 +33,7 @@ func Middleware() (*jwtmiddleware.JWTMiddleware, map[string]interface{}) {
 
 			// Verify 'aud' claim
 			// 'aud' = audience
-			aud := "http://localhost:8000/"
+			aud := "https://infinite-ocean-99647.herokuapp.com/"
 
 			// debugging ------
 			// convert audience in the JWT token to []interface{} if multiple audiences
