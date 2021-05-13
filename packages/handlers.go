@@ -36,38 +36,51 @@ func OpenConnection() (*sql.DB, string) {
 	// 	log.Fatal("Error loading .env file")
 	// }
 
+	// user, ok := os.LookupEnv("USER")
+	// if !ok {
+	// 	log.Fatal("Error loading env variables")
+	// }
+	// password, ok := os.LookupEnv("PASSWORD")
+	// if !ok {
+	// 	log.Fatal("Error loading env variables")
+	// }
+	// dbname, ok := os.LookupEnv("DB_NAME")
+	// if !ok {
+	// 	log.Fatal("Error loading env variables")
+	// }
+
+	// // fmt.Println(host, port, user, password, db_name)
+
+	// // connecting to database
+	// // 1. creating the connection string
+	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+
+	// // 2. validates the arguments provided, doesn't create connection to database
+	// db, err := sql.Open("postgres", psqlInfo)
+	// if err != nil {
+	// 	fmt.Println("-----ERROR 1------")
+	// 	panic(err)
+	// }
+
+	// // 3. actually opens connection to database
+	// err = db.Ping()
+	// if err != nil {
+	// 	fmt.Println("-----ERROR 2----here!!!!!!!!!--")
+	// 	panic(err)
+	// }
+
 	// -------------------
 
-	user, ok := os.LookupEnv("USER")
+	// connecting to DB in production
+	// retrieve the url
+	dbURL, ok := os.LookupEnv("DATABASE_URL")
 	if !ok {
-		log.Fatal("Error loading env variables")
+		log.Fatal("-------ERROR 1--------")
 	}
-	password, ok := os.LookupEnv("PASSWORD")
-	if !ok {
-		log.Fatal("Error loading env variables")
-	}
-	dbname, ok := os.LookupEnv("DB_NAME")
-	if !ok {
-		log.Fatal("Error loading env variables")
-	}
-
-	// fmt.Println(host, port, user, password, db_name)
-
-	// connecting to database
-	// 1. creating the connection string
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
-
-	// 2. validates the arguments provided, doesn't create connection to database
-	db, err := sql.Open("postgres", psqlInfo)
+	// connect to the db
+	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
-		fmt.Println("-----ERROR 1------")
-		panic(err)
-	}
-
-	// 3. actually opens connection to database
-	err = db.Ping()
-	if err != nil {
-		fmt.Println("-----ERROR 2------")
+		fmt.Println("-------ERROR 2--------")
 		panic(err)
 	}
 
@@ -105,7 +118,7 @@ func GetEmail() string {
 
 	key, ok := os.LookupEnv("NAMESPACE_DOMAIN")
 	if !ok {
-		log.Fatal("Error loading env variables")
+		log.Fatal("Error loading env variables (namespace domain)")
 	}
 	_, token := Middleware()
 	email := token[key].(string)
