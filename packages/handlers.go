@@ -60,12 +60,14 @@ func OpenConnection() (*sql.DB, string) {
 	// 2. validates the arguments provided, doesn't create connection to database
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
+		fmt.Println("-----ERROR 1------")
 		panic(err)
 	}
 
 	// 3. actually opens connection to database
 	err = db.Ping()
 	if err != nil {
+		fmt.Println("-----ERROR 2------")
 		panic(err)
 	}
 
@@ -74,6 +76,7 @@ func OpenConnection() (*sql.DB, string) {
 	addEmail := `INSERT INTO users (email) VALUES ($1) ON CONFLICT (email) DO NOTHING;`
 	_, err = db.Exec(addEmail, email)
 	if err != nil {
+		fmt.Println("-----ERROR 3------")
 		panic(err)
 	}
 
@@ -82,6 +85,7 @@ func OpenConnection() (*sql.DB, string) {
 	getUser := `SELECT user_id FROM users WHERE email = $1;`
 	err = db.QueryRow(getUser, email).Scan(&userId)
 	if err != nil {
+		fmt.Println("-----ERROR 4------")
 		panic(err)
 	}
 
@@ -129,6 +133,7 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_uuid = users.user_id WHERE user_id = $1;", userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 5------")
 		panic(err)
 	}
 	defer rows.Close()
@@ -141,6 +146,8 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&item.TaskNum, &item.Task, &item.Status)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println("-----ERROR 6------")
+
 			panic(err)
 		}
 		items = append(items, item)
@@ -153,6 +160,8 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(itemBytes)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		fmt.Println("-----ERROR 7------")
+
 		panic(err)
 	}
 
@@ -177,6 +186,8 @@ var AddTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newTask)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 8------")
+
 		panic(err)
 	}
 
@@ -190,6 +201,8 @@ var AddTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(sqlStatement, newTask.Task, newTask.Status, userId).Scan(&updatedTask.TaskNum, &updatedTask.Task, &updatedTask.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 9------")
+
 		panic(err)
 	}
 
@@ -209,6 +222,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	number, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 10------")
+
 		panic(err)
 	}
 
@@ -218,6 +233,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	res, err := db.Exec(sqlStatement, number, userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 11------")
+
 		panic(err)
 	}
 
@@ -225,6 +242,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	_, err = res.RowsAffected()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 12------")
+
 		panic(err)
 	}
 	// fmt.Println(count)
@@ -233,6 +252,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	rows, err := db.Query("SELECT id, task, status FROM tasks JOIN users ON tasks.user_uuid = users.user_id WHERE user_id = $1;", userId)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 13------")
+
 		panic(err)
 	}
 	defer rows.Close()
@@ -245,6 +266,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		err := rows.Scan(&item.TaskNum, &item.Task, &item.Status)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			fmt.Println("-----ERROR 14------")
+
 			panic(err)
 		}
 		items = append(items, item)
@@ -260,6 +283,8 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	_, err = w.Write(itemBytes)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusNotFound)
+		fmt.Println("-----ERROR 15------")
+
 		panic(err)
 	}
 })
@@ -273,6 +298,8 @@ var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	number, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 16------")
+
 		panic(err)
 	}
 
@@ -286,6 +313,8 @@ var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(r.Body).Decode(&newTask)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 17------")
+
 		panic(err)
 	}
 
@@ -297,6 +326,8 @@ var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(sqlStatement, number, newTask.Task, userId).Scan(&updatedTask.TaskNum, &updatedTask.Task, &updatedTask.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 18------")
+
 		panic(err)
 	}
 
@@ -315,6 +346,8 @@ var DoneTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	number, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 19------")
+
 		panic(err)
 	}
 
@@ -334,6 +367,8 @@ var DoneTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(sqlStatement1, number, userId).Scan(&currStatus)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 20------")
+
 		panic(err)
 	}
 
@@ -341,6 +376,8 @@ var DoneTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err = db.QueryRow(sqlStatement2, number, !currStatus, userId).Scan(&updatedTask.TaskNum, &updatedTask.Task, &updatedTask.Status)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		fmt.Println("-----ERROR 21------")
+
 		panic(err)
 	}
 	w.WriteHeader(http.StatusOK)
