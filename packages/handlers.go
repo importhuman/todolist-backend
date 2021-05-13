@@ -10,7 +10,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
+	// "github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
@@ -28,15 +28,28 @@ const (
 )
 
 func OpenConnection() (*sql.DB, string) {
-	// getting constants from .env
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// ----------- For development only ---------
 
-	user := os.Getenv("USER")
-	password := os.Getenv("PASSWORD")
-	dbname := os.Getenv("DB_NAME")
+	// getting constants from .env
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+
+	// -------------------
+
+	user, ok := os.LookupEnv("USER")
+	if !ok {
+		log.Fatal("Error loading env variables")
+	}
+	password, ok := os.LookupEnv("PASSWORD")
+	if !ok {
+		log.Fatal("Error loading env variables")
+	}
+	dbname, ok := os.LookupEnv("DB_NAME")
+	if !ok {
+		log.Fatal("Error loading env variables")
+	}
 
 	// fmt.Println(host, port, user, password, db_name)
 
@@ -77,11 +90,19 @@ func OpenConnection() (*sql.DB, string) {
 
 // get and parse the (modified) token for email
 func GetEmail() string {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// -------- for development only --------
+
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+
+	// ----------------
+
+	key, ok := os.LookupEnv("NAMESPACE_DOMAIN")
+	if !ok {
+		log.Fatal("Error loading env variables")
 	}
-	key := os.Getenv("NAMESPACE_DOMAIN")
 	_, token := Middleware()
 	email := token[key].(string)
 	return email
