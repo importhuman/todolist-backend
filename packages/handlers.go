@@ -90,12 +90,18 @@ func GetEmail() string {
 // get complete list
 var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	// set header to json content, otherwise data appear as plain text
-	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
+
 	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Add("Access-Control-Allow-Headers", "Origin")
 	w.Header().Add("Access-Control-Allow-Headers", "Accept")
 	w.Header().Add("Access-Control-Allow-Headers", "Authorization")
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
+
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	w.Header().Set("Access-Control-Allow-Methods", "*")
 
 	db, userId := OpenConnection()
 
