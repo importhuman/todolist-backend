@@ -65,18 +65,7 @@ func GetEmail() string {
 // get complete list
 var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	// set header to json content, otherwise data appear as plain text
-
-	w.Header().Add("Access-Control-Allow-Headers", "Content-Type")
-	w.Header().Add("Access-Control-Allow-Headers", "Origin")
-	w.Header().Add("Access-Control-Allow-Headers", "Accept")
-	w.Header().Add("Access-Control-Allow-Headers", "Authorization")
-
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
-
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-	w.Header().Set("Access-Control-Allow-Methods", "*")
 
 	db, userId := OpenConnection()
 
@@ -110,7 +99,7 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	// w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 
 	// output without indentation
 	// NewEncoder: WHERE should the encoder write to
@@ -121,7 +110,6 @@ var GetList = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 // add task
 var AddTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
 
 	// decode the requested data to 'newTask'
 	var newTask Item
@@ -156,7 +144,6 @@ var AddTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 // delete task
 var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
 
 	// get the number from the request url
 	vars := mux.Vars(r)
@@ -221,7 +208,7 @@ var DeleteTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 // edit task
 var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
+
 	// get the number from the request url
 	vars := mux.Vars(r)
 	number, err := strconv.Atoi(vars["id"])
@@ -263,7 +250,7 @@ var EditTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 // change task status
 var DoneTask = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access-Control-Allow-Origin", "https://mighty-fjord-07080.herokuapp.com")
+
 	// get the number from the request url
 	vars := mux.Vars(r)
 	number, err := strconv.Atoi(vars["id"])

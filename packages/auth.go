@@ -59,17 +59,6 @@ func Middleware() (*jwtmiddleware.JWTMiddleware, map[string]interface{}) {
 				}
 			}
 
-			// ------
-
-			// this was the original way of verifying audience, wasn't working because it couldn't convert slice correctly
-
-			// checkAud := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
-			// if !checkAud {
-			// 	return token, errors.New("Invalid audience.")
-			// }
-
-			// -----------------------
-
 			// Verify 'iss' claim
 			// 'iss' = issuer
 			iss := "https://importhuman.us.auth0.com/"
