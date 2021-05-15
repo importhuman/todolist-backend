@@ -3,7 +3,6 @@ package backend
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/auth0/go-jwt-middleware"
@@ -81,7 +80,6 @@ func Middleware() (*jwtmiddleware.JWTMiddleware, map[string]interface{}) {
 
 			cert, err := getPemCert(token)
 			if err != nil {
-				fmt.Println("-------ERROR IN auth.go----------")
 				panic(err.Error())
 			}
 
